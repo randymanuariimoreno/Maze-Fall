@@ -1,12 +1,48 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.20)
 
-project(maze-fall
-    VERSION 0.1
-    DESCRIPTION "Roguelike Dungeon Crawler made in C++ with SDL3"
-    LANGUAGES CXX)
+project(Maze-Fall
+    VERSION 1.0.0
+    DESCRIPTION "A C++ project using SDL3"
+    LANGUAGES CXX
+)
 
-add_executable(maze-fall)
+# Use a modern C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-target_sources(maze-fall
+# Collect source files
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+)
+
+# Create the executable
+add_executable(${PROJECT_NAME}
+    ${PROJECT_SOURCES}
+)
+
+# Include project headers
+target_include_directories(${PROJECT_NAME}
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
+# Required SDL3 support
+find_package(SDL3 REQUIRED CONFIG)
+find_package(SDL3_image REQUIRED CONFIG)
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE SDL3::SDL3
+)
+
+if(SDL3_FOUND)
+    message(STATUS "SDL3 found: enabling SDL3 support")
+
+    target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+        SDL3::SDL3
+        SDL3_image::SDL3_image
+    )
+else()
+    message(STATUS "SDL3 not found: building without SDL3")
+endif()
